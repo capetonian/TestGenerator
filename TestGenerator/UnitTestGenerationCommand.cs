@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.Design;
-using System.Globalization;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -77,11 +76,15 @@ namespace TestGenerator
         /// <param name="e">Event args.</param>
         private void Execute(object sender, EventArgs e)
         {
+            var dte = _package.GetService<DTE>();
+
             ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (!dte.ActiveDocument.FullName.EndsWith(".cs")) return;
+
             var message = "Hello world!";
             const string title = "UnitTestGenerationCommand";
 
-            // Show a message box to prove we were here
             VsShellUtilities.ShowMessageBox(
                 _package,
                 message,
