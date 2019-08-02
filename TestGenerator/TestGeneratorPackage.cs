@@ -31,7 +31,7 @@ namespace TestGenerator
         /// <summary>
         /// TestGeneratorPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "6376cd67-ba99-4dc3-80b9-dbb2173ebfd8";
+        public const string PackageGuidString = "97f15509-fb58-4392-b078-67cd565d6967";
 
         #region Package Members
 
@@ -46,7 +46,8 @@ namespace TestGenerator
         {
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
-            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await UnitTestGenerationCommand.InitializeAsync(this);
         }
 
         #endregion
