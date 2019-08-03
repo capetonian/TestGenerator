@@ -24,7 +24,7 @@ namespace TestGenerator
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(TestGeneratorPackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class TestGeneratorPackage : AsyncPackage
     {

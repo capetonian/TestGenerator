@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using EnvDTE;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
@@ -63,7 +65,7 @@ namespace TestGenerator
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
-            var commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var commandService = package.GetService<IMenuCommandService>() as OleMenuCommandService;
             Instance = new UnitTestGenerationCommand(package, commandService);
         }
 
@@ -81,6 +83,13 @@ namespace TestGenerator
             ThreadHelper.ThrowIfNotOnUIThread();
 
             if (!dte.ActiveDocument.FullName.EndsWith(".cs")) return;
+            var document = dte.ActiveDocument.Object() as TextDocument;
+
+            var tree = CSharpSyntaxTree.ParseText(document.StartPoint.CreateEditPoint().GetText(document.EndPoint));
+            var root = (CompilationUnitSyntax) tree.GetRoot();
+            var namespaceName = (NamespaceDeclarationSyntax) root.Members[0];
+            var className = (ClassDeclarationSyntax) namespaceName.Members[0];
+            var constructor = (ConstructorDeclarationSyntax) className.Members[0];
 
             var message = "Hello world!";
             const string title = "UnitTestGenerationCommand";
