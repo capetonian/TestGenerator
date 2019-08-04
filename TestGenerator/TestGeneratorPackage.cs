@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.VisualStudio.Shell;
+using TestGenerator.Commands;
 using Task = System.Threading.Tasks.Task;
 
 namespace TestGenerator
@@ -24,16 +25,14 @@ namespace TestGenerator
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(TestGeneratorPackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class TestGeneratorPackage : AsyncPackage
     {
         /// <summary>
         /// TestGeneratorPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "6376cd67-ba99-4dc3-80b9-dbb2173ebfd8";
-
-        #region Package Members
+        public const string PackageGuidString = "97f15509-fb58-4392-b078-67cd565d6967";
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -46,9 +45,8 @@ namespace TestGenerator
         {
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
-            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await UnitTestGenerationCommand.InitializeAsync(this);
         }
-
-        #endregion
     }
 }
