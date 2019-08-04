@@ -1,13 +1,11 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using EnvDTE;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+using TestGenerator.Parsing;
 using Task = System.Threading.Tasks.Task;
 
-namespace TestGenerator
+namespace TestGenerator.Commands
 {
     /// <summary>
     /// Command handler
@@ -30,6 +28,16 @@ namespace TestGenerator
         private readonly AsyncPackage _package;
 
         /// <summary>
+        /// Loads the syntax tree for the given document
+        /// </summary>
+        private readonly ISyntaxTreeFactory _syntaxTreeFactory;
+
+        /// <summary>
+        /// Loads specific data from the syntax tree
+        /// </summary>
+        private readonly IClassParser _classParser;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="UnitTestGenerationCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
@@ -39,6 +47,8 @@ namespace TestGenerator
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+            _syntaxTreeFactory = new SyntaxTreeFactory();
+            _classParser = new ClassParser();
 
             var menuCommandId = new CommandID(CommandSet, CommandId);
             var menuItem = new MenuCommand(Execute, menuCommandId);
@@ -53,7 +63,7 @@ namespace TestGenerator
         /// <summary>
         /// Gets the service provider from the owner package.
         /// </summary>
-        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider => _package;
+        private IAsyncServiceProvider ServiceProvider => _package;
 
         /// <summary>
         /// Initializes the singleton instance of the command.
@@ -78,29 +88,20 @@ namespace TestGenerator
         /// <param name="e">Event args.</param>
         private void Execute(object sender, EventArgs e)
         {
-            var dte = _package.GetService<DTE>();
+            var dte = ServiceProvider.GetService<DTE>();
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
             if (!dte.ActiveDocument.FullName.EndsWith(".cs")) return;
-            var document = dte.ActiveDocument.Object() as TextDocument;
+            var tree = _syntaxTreeFactory.LoadSyntaxTreeFromDocument(dte.ActiveDocument);
 
-            var tree = CSharpSyntaxTree.ParseText(document.StartPoint.CreateEditPoint().GetText(document.EndPoint));
-            var root = (CompilationUnitSyntax) tree.GetRoot();
-            var namespaceName = (NamespaceDeclarationSyntax) root.Members[0];
-            var className = (ClassDeclarationSyntax) namespaceName.Members[0];
-            var constructor = (ConstructorDeclarationSyntax) className.Members[0];
+            foreach (var classDefinition in _classParser.LoadClass(tree))
+            {
+                if (classDefinition != null)
+                {
 
-            var message = "Hello world!";
-            const string title = "UnitTestGenerationCommand";
-
-            VsShellUtilities.ShowMessageBox(
-                _package,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                }
+            };
         }
     }
 }

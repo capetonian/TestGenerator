@@ -4,9 +4,9 @@ namespace TestGenerator
 {
     public static class Extensions
     {
-        public static T GetService<T>(this AsyncPackage package)
+        public static T GetService<T>(this IAsyncServiceProvider serviceProvider)
         {
-            var instance = package.GetServiceAsync(typeof(T)).Result;
+            var instance = serviceProvider.GetServiceAsync(typeof(T)).Result;
 
             return (T)instance;
         }

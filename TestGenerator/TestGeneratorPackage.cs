@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.VisualStudio.Shell;
+using TestGenerator.Commands;
 using Task = System.Threading.Tasks.Task;
 
 namespace TestGenerator
@@ -33,8 +34,6 @@ namespace TestGenerator
         /// </summary>
         public const string PackageGuidString = "97f15509-fb58-4392-b078-67cd565d6967";
 
-        #region Package Members
-
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -49,7 +48,5 @@ namespace TestGenerator
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await UnitTestGenerationCommand.InitializeAsync(this);
         }
-
-        #endregion
     }
 }

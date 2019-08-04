@@ -46,9 +46,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="Models\ClassDefinition.cs" />
+    <Compile Include="Parsing\ClassParser.cs" />
+    <Compile Include="Parsing\SyntaxTreeFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestGeneratorPackage.cs" />
-    <Compile Include="UnitTestGenerationCommand.cs" />
+    <Compile Include="Commands\UnitTestGenerationCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source.extension.vsixmanifest">
