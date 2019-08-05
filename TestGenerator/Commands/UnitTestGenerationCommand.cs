@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using TestGenerator.Generation;
 using TestGenerator.Parsing;
 using Task = System.Threading.Tasks.Task;
 
@@ -38,6 +39,11 @@ namespace TestGenerator.Commands
         private readonly IClassParser _classParser;
 
         /// <summary>
+        /// Writes a unit test for a class
+        /// </summary>
+        private readonly ITestWriter _testWriter;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="UnitTestGenerationCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
@@ -47,8 +53,10 @@ namespace TestGenerator.Commands
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+
             _syntaxTreeFactory = new SyntaxTreeFactory();
             _classParser = new ClassParser();
+            _testWriter = new TestWriter();
 
             var menuCommandId = new CommandID(CommandSet, CommandId);
             var menuItem = new MenuCommand(Execute, menuCommandId);
@@ -98,9 +106,7 @@ namespace TestGenerator.Commands
             foreach (var classDefinition in _classParser.LoadClass(tree))
             {
                 if (classDefinition != null)
-                {
-
-                }
+                    _testWriter.ScaffoldTest(classDefinition);
             };
         }
     }
