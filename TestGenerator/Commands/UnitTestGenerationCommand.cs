@@ -1,9 +1,14 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using TestGenerator.Generation;
 using TestGenerator.Parsing;
+using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.IAsyncServiceProvider;
 using Task = System.Threading.Tasks.Task;
 
 namespace TestGenerator.Commands
@@ -97,17 +102,65 @@ namespace TestGenerator.Commands
         private void Execute(object sender, EventArgs e)
         {
             var dte = ServiceProvider.GetService<DTE>();
+            var solution = ServiceProvider.GetService<IVsSolution>();
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
             if (!dte.ActiveDocument.FullName.EndsWith(".cs")) return;
             var tree = _syntaxTreeFactory.LoadSyntaxTreeFromDocument(dte.ActiveDocument);
+            var currentProject = GetCurrentProject(dte.ActiveSolutionProjects as Array);
+            var testPath = GetTestPath(currentProject.FullName, dte.ActiveDocument.Path);
 
             foreach (var classDefinition in _classParser.LoadClass(tree))
             {
-                if (classDefinition != null)
-                    _testWriter.ScaffoldTest(classDefinition);
+                if (classDefinition == null) continue;
+
+                var testProject = LoadTestProject(solution, currentProject);
+                if (testProject == null)
+                    DisplayMessage("No test project was found. Please create a new test project.", "No Test Project");
+                else
+                    _testWriter.ScaffoldTest(classDefinition, testProject, testPath);
             };
+        }
+
+        private static Project GetCurrentProject(Array projects)
+        {
+            return projects.Length > 0 ? projects.GetValue(0) as Project : null;
+        }
+
+        private static string GetTestPath(string projectFile, string documentPath)
+        {
+            var projectPath = Directory.GetParent(projectFile);
+            if (!documentPath.Contains(projectPath.FullName)) return string.Empty;
+
+            var testPath = documentPath.Replace(projectPath.FullName, "");
+
+            return Regex.Replace(testPath, @"^\\", "");
+        }
+
+        private static string LoadTestProject(IVsSolution solution, Project currentProject)
+        {
+            solution.GetProjectFilesInSolution(1, 0, null, out var numProjects);
+            var projects = new string[numProjects];
+            solution.GetProjectFilesInSolution(1, 0, projects, out numProjects);
+
+            var testProjects = projects.Where(_ => _.EndsWith("Tests.csproj"));
+
+            // TODO if the project file is not found, prompt to select the project
+            var projectFile = testProjects.FirstOrDefault(_ => Path.GetFileName(_).Contains(currentProject.Name));
+
+            return projectFile;
+        }
+
+        private void DisplayMessage(string message, string title)
+        {
+            VsShellUtilities.ShowMessageBox(
+                _package,
+                message,
+                title,
+                OLEMSGICON.OLEMSGICON_INFO,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
     }
 }
