@@ -10,9 +10,12 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
+  patch: $[counter('VersionCounter', 0)]
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+
+name: 1.0.$(patch)
 
 steps:
 - task: NuGetToolInstaller@1
@@ -31,3 +34,15 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: |
+      README.md
+      publishManifest.json
+      **/*.vsix
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')

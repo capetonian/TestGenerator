@@ -5,16 +5,29 @@ namespace TestGenerator.Generation
 {
     public interface ITestWriter
     {
-        void ScaffoldTest(TestClassDefinition testClassDefinition);
+        void ScaffoldTest(TestClassDefinition testClassDefinition, string testProject, string testPath);
     }
 
     public class TestWriter : ITestWriter
     {
-        public void ScaffoldTest(TestClassDefinition testClassDefinition)
+        public void ScaffoldTest(TestClassDefinition testClassDefinition, string testProject, string testPath)
         {
             var template = new UnitTestTemplate(testClassDefinition);
             var content = template.TransformText();
-            File.WriteAllText($"{testClassDefinition.ClassName}.cs", content);
+
+            var directory = DetermineDirectory(testProject, testPath);
+            File.WriteAllText(Path.Combine(directory, $"{testClassDefinition.ClassName}.cs"), content);
+        }
+
+        private static string DetermineDirectory(string testProject, string testPath)
+        {
+            var testProjectDirectory = Directory.GetParent(testProject);
+            var testDirectory = Path.Combine(testProjectDirectory.FullName, testPath);
+
+            if (!Directory.Exists(testDirectory))
+                Directory.CreateDirectory(testDirectory);
+
+            return testDirectory;
         }
     }
 }
