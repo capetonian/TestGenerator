@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{5607EB82-337C-4284-B91C-54F2183A7DAF}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
+		publishmanifest.json = publishmanifest.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGenerator.Tests", "TestGenerator.Tests\TestGenerator.Tests.csproj", "{CB2B369C-7498-4403-8244-390CE0FF12E1}"

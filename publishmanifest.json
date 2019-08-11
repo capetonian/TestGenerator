@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [ "testing", "scaffolding" ],
+  "identity": {
+    "internalName": "TestGenerator"
+  },
+  "overview": "README.md",
+  "priceCategory": "free",
+  "publisher": "EvanRichardson",
+  "private": false,
+  "qna": true,
+  "repo": "https://github.com/ejrich/TestGenerator"
+}
