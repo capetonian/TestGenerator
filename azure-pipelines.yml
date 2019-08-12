@@ -47,6 +47,7 @@ steps:
     Contents: |
       README.md
       publishManifest.json
+      publish-vsix.ps1
       **/*.vsix
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
