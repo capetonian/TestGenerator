@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
@@ -64,7 +65,7 @@ namespace TestGenerator.Commands
             _testWriter = new TestWriter();
 
             var menuCommandId = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(Execute, menuCommandId);
+            var menuItem = new OleMenuCommand(Execute, menuCommandId);
             commandService.AddCommand(menuItem);
         }
 
@@ -102,9 +103,6 @@ namespace TestGenerator.Commands
         private async void Execute(object sender, EventArgs e)
         {
             var dte = await ServiceProvider.GetServiceAsync<DTE>();
-            var solution = await ServiceProvider.GetServiceAsync<IVsSolution>();
-
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             if (!dte.ActiveDocument.FullName.EndsWith(".cs")) return;
 
@@ -116,7 +114,7 @@ namespace TestGenerator.Commands
             {
                 if (classDefinition == null) continue;
 
-                var testProject = LoadTestProject(solution, currentProject);
+                var testProject = LoadTestProject(dte.Solution, currentProject);
                 if (testProject == null)
                     DisplayMessage("No test project was found. Please create a new test project.", "No Test Project");
                 else
@@ -139,16 +137,17 @@ namespace TestGenerator.Commands
             return Regex.Replace(testPath, @"^\\", "");
         }
 
-        private static string LoadTestProject(IVsSolution solution, Project currentProject)
+        private static Project LoadTestProject(Solution solution, Project currentProject)
         {
-            solution.GetProjectFilesInSolution(1, 0, null, out var numProjects);
-            var projects = new string[numProjects];
-            solution.GetProjectFilesInSolution(1, 0, projects, out numProjects);
+            var testProjects = new List<Project>();
 
-            var testProjects = projects.Where(_ => _.EndsWith("Tests.csproj"));
+            foreach (Project project in solution.Projects)
+            {
+                if (project.FileName.EndsWith("Tests.csproj")) testProjects.Add(project);
+            }
 
             // TODO if the project file is not found, prompt to select the project
-            var projectFile = testProjects.FirstOrDefault(_ => Path.GetFileName(_).Contains(currentProject.Name));
+            var projectFile = testProjects.FirstOrDefault(testProject => testProject.FileName.Contains(currentProject.Name));
 
             return projectFile;
         }
