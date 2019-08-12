@@ -1,5 +1,5 @@
 $PersonalAccessToken = $args[0]
-$VsixPath = "$PSScriptRoot\**\TestGenerator.vsix"
+$VsixPath = Resolve-Path $PSScriptRoot\**\TestGenerator.vsix
 $ManifestPath = "$PSScriptRoot\publishmanifest.json"
 
 # Find the location of VsixPublisher
