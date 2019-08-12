@@ -18,6 +18,12 @@ variables:
 name: 1.0.$(patch)
 
 steps:
+- task: Powershell@2
+  displayName: Update version in the VSIX manifest
+  inputs:
+    filePath: 'update-version.ps1'
+    arguments: '$(Build.BuildNumber)'
+
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
