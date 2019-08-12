@@ -88,7 +88,7 @@ namespace TestGenerator.Commands
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
-            var commandService = package.GetService<IMenuCommandService>() as OleMenuCommandService;
+            var commandService = await package.GetServiceAsync<IMenuCommandService>() as OleMenuCommandService;
             Instance = new UnitTestGenerationCommand(package, commandService);
         }
 
@@ -99,14 +99,15 @@ namespace TestGenerator.Commands
         /// </summary>
         /// <param name="sender">Event sender.</param>
         /// <param name="e">Event args.</param>
-        private void Execute(object sender, EventArgs e)
+        private async void Execute(object sender, EventArgs e)
         {
-            var dte = ServiceProvider.GetService<DTE>();
-            var solution = ServiceProvider.GetService<IVsSolution>();
+            var dte = await ServiceProvider.GetServiceAsync<DTE>();
+            var solution = await ServiceProvider.GetServiceAsync<IVsSolution>();
 
-            ThreadHelper.ThrowIfNotOnUIThread();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             if (!dte.ActiveDocument.FullName.EndsWith(".cs")) return;
+
             var tree = _syntaxTreeFactory.LoadSyntaxTreeFromDocument(dte.ActiveDocument);
             var currentProject = GetCurrentProject(dte.ActiveSolutionProjects as Array);
             var testPath = GetTestPath(currentProject.FullName, dte.ActiveDocument.Path);
@@ -120,7 +121,7 @@ namespace TestGenerator.Commands
                     DisplayMessage("No test project was found. Please create a new test project.", "No Test Project");
                 else
                     _testWriter.ScaffoldTest(classDefinition, testProject, testPath);
-            };
+            }
         }
 
         private static Project GetCurrentProject(Array projects)
