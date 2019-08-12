@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
@@ -139,15 +138,12 @@ namespace TestGenerator.Commands
 
         private static Project LoadTestProject(Solution solution, Project currentProject)
         {
-            var testProjects = new List<Project>();
-
-            foreach (Project project in solution.Projects)
-            {
-                if (project.FileName.EndsWith("Tests.csproj")) testProjects.Add(project);
-            }
+            var testProjects = solution.Projects.Cast<Project>()
+                .Where(project => project.FileName.EndsWith("Tests.csproj") && Path.GetFileName(project.FileName).Contains(currentProject.Name))
+                .OrderBy(_ => Path.GetFileName(_.FileName)?.Replace(currentProject.Name, string.Empty).Length);
 
             // TODO if the project file is not found, prompt to select the project
-            var projectFile = testProjects.FirstOrDefault(testProject => testProject.FileName.Contains(currentProject.Name));
+            var projectFile = testProjects.FirstOrDefault();
 
             return projectFile;
         }
