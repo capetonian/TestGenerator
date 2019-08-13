@@ -44,6 +44,36 @@ if (_testClassDefinition.Dependencies.Any())
 #>
             _target = new <#= _testClassDefinition.TargetClassName #>(<#= GetDependencyObjects() #>);
         }
+
+<#
+if (_testClassDefinition.Dependencies.Any())
+{
+#>
+        [TestCleanup]
+        public void TestCleanup()
+        {
+<# 
+    foreach (var mock in _testClassDefinition.Dependencies)
+    {
+#>
+            _mock<#= mock #>.VerifyAll();
+<#
+    }
+#>
+        }
+
+<#
+}
+foreach (var method in _testClassDefinition.Methods)
+{
+#>
+        [TestMethod]
+        public void <#= method #>()
+        {
+        }
+<#
+}
+#>
     }
 }
 <#+

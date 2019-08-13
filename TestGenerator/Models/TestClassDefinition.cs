@@ -9,5 +9,6 @@ namespace TestGenerator.Models
         public string TargetClassName { get; set; }
         public string TargetBaseType { get; set; }
         public IList<string> Dependencies { get; } = new List<string>();
+        public IList<string> Methods { get; } = new List<string>();
     }
 }
