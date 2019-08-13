@@ -64,7 +64,7 @@ namespace TestGenerator.Commands
             _testWriter = new TestWriter();
 
             var menuCommandId = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(Execute, menuCommandId);
+            var menuItem = new OleMenuCommand(Execute, menuCommandId);
             commandService.AddCommand(menuItem);
         }
 
@@ -88,7 +88,7 @@ namespace TestGenerator.Commands
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
-            var commandService = package.GetService<IMenuCommandService>() as OleMenuCommandService;
+            var commandService = await package.GetServiceAsync<IMenuCommandService>() as OleMenuCommandService;
             Instance = new UnitTestGenerationCommand(package, commandService);
         }
 
@@ -99,14 +99,12 @@ namespace TestGenerator.Commands
         /// </summary>
         /// <param name="sender">Event sender.</param>
         /// <param name="e">Event args.</param>
-        private void Execute(object sender, EventArgs e)
+        private async void Execute(object sender, EventArgs e)
         {
-            var dte = ServiceProvider.GetService<DTE>();
-            var solution = ServiceProvider.GetService<IVsSolution>();
-
-            ThreadHelper.ThrowIfNotOnUIThread();
+            var dte = await ServiceProvider.GetServiceAsync<DTE>();
 
             if (!dte.ActiveDocument.FullName.EndsWith(".cs")) return;
+
             var tree = _syntaxTreeFactory.LoadSyntaxTreeFromDocument(dte.ActiveDocument);
             var currentProject = GetCurrentProject(dte.ActiveSolutionProjects as Array);
             var testPath = GetTestPath(currentProject.FullName, dte.ActiveDocument.Path);
@@ -115,12 +113,12 @@ namespace TestGenerator.Commands
             {
                 if (classDefinition == null) continue;
 
-                var testProject = LoadTestProject(solution, currentProject);
+                var testProject = LoadTestProject(dte.Solution, currentProject);
                 if (testProject == null)
                     DisplayMessage("No test project was found. Please create a new test project.", "No Test Project");
                 else
                     _testWriter.ScaffoldTest(classDefinition, testProject, testPath);
-            };
+            }
         }
 
         private static Project GetCurrentProject(Array projects)
@@ -138,16 +136,14 @@ namespace TestGenerator.Commands
             return Regex.Replace(testPath, @"^\\", "");
         }
 
-        private static string LoadTestProject(IVsSolution solution, Project currentProject)
+        private static Project LoadTestProject(Solution solution, Project currentProject)
         {
-            solution.GetProjectFilesInSolution(1, 0, null, out var numProjects);
-            var projects = new string[numProjects];
-            solution.GetProjectFilesInSolution(1, 0, projects, out numProjects);
-
-            var testProjects = projects.Where(_ => _.EndsWith("Tests.csproj"));
+            var testProjects = solution.Projects.Cast<Project>()
+                .Where(project => project.FileName.EndsWith("Tests.csproj") && Path.GetFileName(project.FileName).Contains(currentProject.Name))
+                .OrderBy(_ => Path.GetFileName(_.FileName)?.Replace(currentProject.Name, string.Empty).Length);
 
             // TODO if the project file is not found, prompt to select the project
-            var projectFile = testProjects.FirstOrDefault(_ => Path.GetFileName(_).Contains(currentProject.Name));
+            var projectFile = testProjects.FirstOrDefault();
 
             return projectFile;
         }
