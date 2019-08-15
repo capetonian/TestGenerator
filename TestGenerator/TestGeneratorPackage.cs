@@ -13,6 +13,7 @@ namespace TestGenerator
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideOptionPage(typeof(Settings), "Test Generator", "Settings", 0, 0, true)]
     public sealed class TestGeneratorPackage : AsyncPackage
     {
         /// <summary>
