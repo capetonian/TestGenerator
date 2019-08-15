@@ -123,6 +123,8 @@ namespace TestGenerator.Commands
 
                 testProject.ProjectItems.AddFromFile(fileName);
 
+                // Install Moq and required dependencies
+
                 VsShellUtilities.OpenDocument(_package, fileName);
             }
         }

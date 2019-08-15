@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInstaller.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Generation\TestWriter.cs" />
     <Compile Include="Generation\UnitTestTemplate.cs">
