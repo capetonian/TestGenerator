@@ -16,7 +16,7 @@ namespace TestGenerator.Generation
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+    #line 1 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "16.0.0.0")]
     public partial class UnitTestTemplate : UnitTestTemplateBase
     {
@@ -26,30 +26,49 @@ namespace TestGenerator.Generation
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("using Microsoft.VisualStudio.TestTools.UnitTesting;\r\nusing Moq;\r\n\r\nnamespace ");
+            this.Write("using Microsoft.VisualStudio.TestTools.UnitTesting;\r\n");
             
-            #line 7 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 5 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+
+if (_testClassDefinition.Dependencies.Any())
+{
+
+            
+            #line default
+            #line hidden
+            this.Write("using Moq;\r\n");
+            
+            #line 10 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+
+}
+
+            
+            #line default
+            #line hidden
+            this.Write("\r\nnamespace ");
+            
+            #line 14 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(_testClassDefinition.Namespace));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n    [TestClass]\r\n    public class ");
             
-            #line 10 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 17 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(_testClassDefinition.ClassName));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n        private ");
             
-            #line 12 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 19 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(_testClassDefinition.TargetBaseType));
             
             #line default
             #line hidden
             this.Write(" _target;\r\n\r\n");
             
-            #line 14 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 21 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
  
 foreach (var mock in _testClassDefinition.Dependencies)
 {
@@ -59,21 +78,21 @@ foreach (var mock in _testClassDefinition.Dependencies)
             #line hidden
             this.Write("        private Mock<");
             
-            #line 18 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 25 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(mock));
             
             #line default
             #line hidden
             this.Write("> _mock");
             
-            #line 18 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 25 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(mock));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 19 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 26 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
 }
 if (_testClassDefinition.Dependencies.Any())
@@ -84,7 +103,7 @@ if (_testClassDefinition.Dependencies.Any())
             #line hidden
             this.Write("\r\n");
             
-            #line 25 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 32 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
 }
 
@@ -93,7 +112,7 @@ if (_testClassDefinition.Dependencies.Any())
             #line hidden
             this.Write("        [TestInitialize]\r\n        public void TestInitialize()\r\n        {\r\n");
             
-            #line 31 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 38 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
  
 foreach (var mock in _testClassDefinition.Dependencies)
 {
@@ -103,21 +122,21 @@ foreach (var mock in _testClassDefinition.Dependencies)
             #line hidden
             this.Write("            _mock");
             
-            #line 35 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 42 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(mock));
             
             #line default
             #line hidden
             this.Write(" = new Mock<");
             
-            #line 35 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 42 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(mock));
             
             #line default
             #line hidden
             this.Write(">(MockBehavior.Strict);\r\n");
             
-            #line 36 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 43 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
 }
 if (_testClassDefinition.Dependencies.Any())
@@ -128,7 +147,7 @@ if (_testClassDefinition.Dependencies.Any())
             #line hidden
             this.Write("\r\n");
             
-            #line 42 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 49 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
 }
 
@@ -137,21 +156,21 @@ if (_testClassDefinition.Dependencies.Any())
             #line hidden
             this.Write("            _target = new ");
             
-            #line 45 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 52 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(_testClassDefinition.TargetClassName));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 45 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 52 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetDependencyObjects()));
             
             #line default
             #line hidden
             this.Write(");\r\n        }\r\n\r\n");
             
-            #line 48 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 55 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
 if (_testClassDefinition.Dependencies.Any())
 {
@@ -161,7 +180,7 @@ if (_testClassDefinition.Dependencies.Any())
             #line hidden
             this.Write("        [TestCleanup]\r\n        public void TestCleanup()\r\n        {\r\n");
             
-            #line 55 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 62 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
  
     foreach (var mock in _testClassDefinition.Dependencies)
     {
@@ -171,14 +190,14 @@ if (_testClassDefinition.Dependencies.Any())
             #line hidden
             this.Write("            _mock");
             
-            #line 59 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 66 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(mock));
             
             #line default
             #line hidden
             this.Write(".VerifyAll();\r\n");
             
-            #line 60 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 67 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
     }
 
@@ -187,7 +206,7 @@ if (_testClassDefinition.Dependencies.Any())
             #line hidden
             this.Write("        }\r\n\r\n");
             
-            #line 65 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 72 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
 }
 foreach (var method in _testClassDefinition.Methods)
@@ -198,14 +217,14 @@ foreach (var method in _testClassDefinition.Methods)
             #line hidden
             this.Write("        [TestMethod]\r\n        public void ");
             
-            #line 71 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 78 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(method));
             
             #line default
             #line hidden
             this.Write("()\r\n        {\r\n        }\r\n");
             
-            #line 74 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+            #line 81 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
 }
 
@@ -216,7 +235,7 @@ foreach (var method in _testClassDefinition.Methods)
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 79 "C:\Projects\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
+        #line 86 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
 
 private string GetDependencyObjects()
 {
