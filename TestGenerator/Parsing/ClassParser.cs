@@ -50,6 +50,12 @@ namespace TestGenerator.Parsing
                     }
                 }
 
+                var publicMethods = classDeclaration.Members.OfType<MethodDeclarationSyntax>()
+                    .Where(method => method.Modifiers.Any(modifier => modifier.Text == "public"))
+                    .ToList();
+
+                publicMethods.ForEach(method => testClass.Methods.Add(method.Identifier.Text));
+
                 yield return testClass;
             }
         }

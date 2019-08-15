@@ -1,26 +1,25 @@
 ﻿using System.IO;
-using EnvDTE;
 using TestGenerator.Models;
 
 namespace TestGenerator.Generation
 {
     public interface ITestWriter
     {
-        void ScaffoldTest(TestClassDefinition testClassDefinition, Project testProject, string testPath);
+        string ScaffoldTest(TestClassDefinition testClassDefinition, string testProject, string testPath);
     }
 
     public class TestWriter : ITestWriter
     {
-        public void ScaffoldTest(TestClassDefinition testClassDefinition, Project testProject, string testPath)
+        public string ScaffoldTest(TestClassDefinition testClassDefinition, string testProject, string testPath)
         {
             var template = new UnitTestTemplate(testClassDefinition);
             var content = template.TransformText();
 
-            var directory = DetermineDirectory(testProject.FullName, testPath);
+            var directory = DetermineDirectory(testProject, testPath);
             var fileName = Path.Combine(directory, $"{testClassDefinition.ClassName}.cs");
             File.WriteAllText(fileName, content);
 
-            testProject.ProjectItems.AddFromFile(fileName);
+            return fileName;
         }
 
         private static string DetermineDirectory(string testProject, string testPath)

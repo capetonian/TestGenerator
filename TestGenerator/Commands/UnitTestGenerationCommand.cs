@@ -108,16 +108,22 @@ namespace TestGenerator.Commands
             var tree = _syntaxTreeFactory.LoadSyntaxTreeFromDocument(dte.ActiveDocument);
             var currentProject = GetCurrentProject(dte.ActiveSolutionProjects as Array);
             var testPath = GetTestPath(currentProject.FullName, dte.ActiveDocument.Path);
+            var testProject = LoadTestProject(dte.Solution, currentProject);
+            if (testProject == null)
+            {
+                DisplayMessage("No test project was found. Please create a new test project.", "No Test Project");
+                return;
+            }
 
             foreach (var classDefinition in _classParser.LoadClass(tree))
             {
                 if (classDefinition == null) continue;
 
-                var testProject = LoadTestProject(dte.Solution, currentProject);
-                if (testProject == null)
-                    DisplayMessage("No test project was found. Please create a new test project.", "No Test Project");
-                else
-                    _testWriter.ScaffoldTest(classDefinition, testProject, testPath);
+                var fileName = _testWriter.ScaffoldTest(classDefinition, testProject.FullName, testPath);
+
+                testProject.ProjectItems.AddFromFile(fileName);
+
+                VsShellUtilities.OpenDocument(_package, fileName);
             }
         }
 
