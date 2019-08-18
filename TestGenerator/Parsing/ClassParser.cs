@@ -16,11 +16,11 @@ namespace TestGenerator.Parsing
     {
         public IEnumerable<TestClassDefinition> LoadClass(SyntaxTree tree)
         {
-            if (!(tree.GetRoot() is CompilationUnitSyntax)) yield return null;
+            if (!(tree.GetRoot() is CompilationUnitSyntax)) yield break;
 
             var root = tree.GetRoot() as CompilationUnitSyntax;
 
-            if (root.Members.Count != 1 && !(root.Members.First() is NamespaceDeclarationSyntax)) yield return null;
+            if (root.Members.Count != 1 && !(root.Members.First() is NamespaceDeclarationSyntax)) yield break;
 
             var baseNamespace = root.Members.First() as NamespaceDeclarationSyntax;
 
