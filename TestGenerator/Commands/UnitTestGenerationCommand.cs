@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
@@ -145,13 +146,43 @@ namespace TestGenerator.Commands
         private static Project LoadTestProject(Solution solution, Project currentProject)
         {
             var testProjects = solution.Projects.Cast<Project>()
-                .Where(project => project.FileName.EndsWith("Tests.csproj") && Path.GetFileName(project.FileName).Contains(currentProject.Name))
+                .SelectMany(GetProjects)
+                .Where(project => project.FileName.EndsWith("Tests.csproj") && Path.GetFileName(project.FileName).ToLower().Contains(currentProject.Name.ToLower()))
                 .OrderBy(_ => Path.GetFileName(_.FileName)?.Replace(currentProject.Name, string.Empty).Length);
 
             // TODO if the project file is not found, prompt to select the project
             var projectFile = testProjects.FirstOrDefault();
 
             return projectFile;
+        }
+
+        private static IEnumerable<Project> GetProjects(Project project)
+        {
+            if (project.Kind == "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}")
+            {
+                foreach (ProjectItem projectItem in project.ProjectItems)
+                {
+                    foreach (var innerProject in GetProjects(projectItem))
+                    {
+                        yield return innerProject;
+                    }
+                }
+            }
+            else
+            {
+                yield return project;
+            }
+        }
+
+        private static IEnumerable<Project> GetProjects(ProjectItem project)
+        {
+            if (project.Object is Project)
+            {
+                foreach (var innerProject in GetProjects(project.Object as Project))
+                {
+                    yield return innerProject;
+                }
+            }
         }
 
         private void DisplayMessage(string message, string title)
