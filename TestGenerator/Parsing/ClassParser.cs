@@ -14,6 +14,8 @@ namespace TestGenerator.Parsing
 
     public class ClassParser : IClassParser
     {
+        private static readonly Regex DependencyRegex = new Regex(@"I?(?<Name>\w+)(<.+>)?");
+
         public IEnumerable<TestClassDefinition> LoadClass(SyntaxTree tree)
         {
             if (!(tree.GetRoot() is CompilationUnitSyntax)) yield break;
@@ -46,7 +48,11 @@ namespace TestGenerator.Parsing
                 {
                     foreach (var dependency in constructorWithDependencies.ParameterList.Parameters)
                     {
-                        testClass.Dependencies.Add(RemoveNewLine(dependency.Type.GetText().ToString()));
+                        testClass.Dependencies.Add(new Dependency
+                        {
+                            Type = RemoveNewLine(dependency.Type.GetText().ToString()),
+                            Name = SanitizeTypeName(dependency.Type.GetText().ToString())
+                        });
                     }
                 }
 
@@ -71,5 +77,12 @@ namespace TestGenerator.Parsing
         }
 
         private static string RemoveNewLine(string text) => Regex.Replace(text, @"\s+", string.Empty);
+
+        private static string SanitizeTypeName(string type)
+        {
+            var match = DependencyRegex.Match(RemoveNewLine(type));
+
+            return match.Success ? match.Groups["Name"].Value : RemoveNewLine(type);
+        }
     }
 }
