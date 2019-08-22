@@ -53,6 +53,7 @@
       <DependentUpon>UnitTestTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="Generation\UnitTestTemplateCode.cs" />
+    <Compile Include="Models\Dependency.cs" />
     <Compile Include="Models\TestClassDefinition.cs" />
     <Compile Include="Parsing\ClassParser.cs" />
     <Compile Include="Parsing\SyntaxTreeFactory.cs" />

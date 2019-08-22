@@ -79,14 +79,14 @@ foreach (var mock in _testClassDefinition.Dependencies)
             this.Write("        private Mock<");
             
             #line 25 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(mock));
+            this.Write(this.ToStringHelper.ToStringWithCulture(mock.Type));
             
             #line default
             #line hidden
             this.Write("> _mock");
             
             #line 25 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(mock));
+            this.Write(this.ToStringHelper.ToStringWithCulture(mock.Name));
             
             #line default
             #line hidden
@@ -123,14 +123,14 @@ foreach (var mock in _testClassDefinition.Dependencies)
             this.Write("            _mock");
             
             #line 42 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(mock));
+            this.Write(this.ToStringHelper.ToStringWithCulture(mock.Name));
             
             #line default
             #line hidden
             this.Write(" = new Mock<");
             
             #line 42 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(mock));
+            this.Write(this.ToStringHelper.ToStringWithCulture(mock.Type));
             
             #line default
             #line hidden
@@ -191,7 +191,7 @@ if (_testClassDefinition.Dependencies.Any())
             this.Write("            _mock");
             
             #line 66 "D:\TestGenerator\TestGenerator\Generation\UnitTestTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(mock));
+            this.Write(this.ToStringHelper.ToStringWithCulture(mock.Name));
             
             #line default
             #line hidden
@@ -239,7 +239,7 @@ foreach (var method in _testClassDefinition.Methods)
 
 private string GetDependencyObjects()
 {
-    return string.Join(", ", _testClassDefinition.Dependencies.Select(_ => $"_mock{_}.Object"));
+    return string.Join(", ", _testClassDefinition.Dependencies.Select(_ => $"_mock{_.Name}.Object"));
 }
 
         

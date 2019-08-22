@@ -22,7 +22,7 @@ namespace <#= _testClassDefinition.Namespace #>
 foreach (var mock in _testClassDefinition.Dependencies)
 {
 #>
-        private Mock<<#= mock #>> _mock<#= mock #>;
+        private Mock<<#= mock.Type #>> _mock<#= mock.Name #>;
 <#
 }
 if (_testClassDefinition.Dependencies.Any())
@@ -39,7 +39,7 @@ if (_testClassDefinition.Dependencies.Any())
 foreach (var mock in _testClassDefinition.Dependencies)
 {
 #>
-            _mock<#= mock #> = new Mock<<#= mock #>>(MockBehavior.Strict);
+            _mock<#= mock.Name #> = new Mock<<#= mock.Type #>>(MockBehavior.Strict);
 <#
 }
 if (_testClassDefinition.Dependencies.Any())
@@ -63,7 +63,7 @@ if (_testClassDefinition.Dependencies.Any())
     foreach (var mock in _testClassDefinition.Dependencies)
     {
 #>
-            _mock<#= mock #>.VerifyAll();
+            _mock<#= mock.Name #>.VerifyAll();
 <#
     }
 #>
@@ -86,6 +86,6 @@ foreach (var method in _testClassDefinition.Methods)
 <#+
 private string GetDependencyObjects()
 {
-    return string.Join(", ", _testClassDefinition.Dependencies.Select(_ => $"_mock{_}.Object"));
+    return string.Join(", ", _testClassDefinition.Dependencies.Select(_ => $"_mock{_.Name}.Object"));
 }
 #>
